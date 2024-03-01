@@ -345,7 +345,13 @@ class CSR(implicit p: Parameters) extends FUWithRedirect
   val spmp = Wire(Vec(NumSPMP, new PMPEntry()))
   val pmpMapping = pmp_gen_mapping(pmp_init, NumPMP, PmpcfgBase, PmpaddrBase, pmp)
   val pmaMapping = pmp_gen_mapping(pma_init, NumPMA, PmacfgBase, PmaaddrBase, pma)
-  val spmpMapping = pmp_gen_mapping(pmp_init, NumSPMP, SpmpcfgBase, SpmpaddrBase, spmp, true)
+
+  val spmpSwitch = RegInit(0.U(XLEN.W))
+  val spmpMapping = pmp_gen_mapping(pmp_init, NumSPMP, SpmpcfgBase, SpmpaddrBase, spmp, true) ++ Map(
+    MaskedRegMap(SpmpSwitch, spmpSwitch, wmask = 1.U(64.W))
+  )
+
+  csrio.customCtrl.spmp_enable := spmpSwitch(0)
 
   // Superviser-Level CSRs
 

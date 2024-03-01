@@ -84,6 +84,7 @@ trait HasCSRConst {
   val Sfetchctl     = 0x9E0
 
   // SPMP
+  val SpmpSwitch    = 0x19F
   val SpmpcfgBase   = 0x1A0
   val SpmpaddrBase  = 0x1B0
 

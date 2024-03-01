@@ -342,8 +342,10 @@ class CSR(implicit p: Parameters) extends FUWithRedirect
   // PMP Mapping
   val pmp = Wire(Vec(NumPMP, new PMPEntry())) // just used for method parameter
   val pma = Wire(Vec(NumPMA, new PMPEntry())) // just used for method parameter
+  val spmp = Wire(Vec(NumSPMP, new PMPEntry()))
   val pmpMapping = pmp_gen_mapping(pmp_init, NumPMP, PmpcfgBase, PmpaddrBase, pmp)
   val pmaMapping = pmp_gen_mapping(pma_init, NumPMA, PmacfgBase, PmaaddrBase, pma)
+  val spmpMapping = pmp_gen_mapping(pmp_init, NumSPMP, SpmpcfgBase, SpmpaddrBase, spmp, true)
 
   // Superviser-Level CSRs
 
@@ -790,6 +792,7 @@ class CSR(implicit p: Parameters) extends FUWithRedirect
                 perfCntMapping ++
                 pmpMapping ++
                 pmaMapping ++
+                spmpMapping ++
                 (if (HasFPU) fcsrMapping else Nil) ++
                 (if (HasCustomCSRCacheOp) cacheopMapping else Nil) ++ 
                 (if(hasVector) vcsrMapping else Nil)

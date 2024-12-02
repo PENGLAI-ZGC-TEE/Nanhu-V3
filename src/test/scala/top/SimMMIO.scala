@@ -38,6 +38,7 @@ class SimMMIO(edge: AXI4EdgeParameters, dmaEdge: AXI4EdgeParameters)(implicit p:
   val sd = LazyModule(new AXI4DummySD(Seq(AddressSet(0x40002000L, 0xfff))))
   val intrGen = LazyModule(new AXI4IntrGenerator(Seq(AddressSet(0x40070000L, 0x0000ffffL))))
   val dmaGen = LazyModule(new AXI4FakeDMA(Seq(AddressSet(0x37030000L, 0x0000ffffL)), dmaEdge.master))
+  val iopmp = LazyModule(new AXI4IOPMP(Seq(AddressSet(0x47030000L, 0x0000ffffL)), dmaEdge.master, dmaEdge.slave))
 
   val axiBus = AXI4Xbar()
 
@@ -47,9 +48,12 @@ class SimMMIO(edge: AXI4EdgeParameters, dmaEdge: AXI4EdgeParameters)(implicit p:
   sd.node := axiBus
   intrGen.node := axiBus
   dmaGen.node := axiBus
+  iopmp.node := axiBus
 
   axiBus := node
-  dma_node := dmaGen.dma_node
+  // dma_node := dmaGen.dma_node
+  iopmp.in_node := dmaGen.dma_node
+  dma_node := iopmp.out_node
 
   val io_axi4 = InModuleBody {
     node.makeIOs()
